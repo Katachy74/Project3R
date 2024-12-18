@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Прогноз погоды для маршрута</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .add-point-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .add-point-btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Прогноз погоды для маршрута</h1>
+        <form method="POST" onsubmit="return combineLocations()">
+            <div class="form-group">
+                <label for="start_point">Начальная точка:</label>
+                <input type="text" id="start_point" name="start_point" required>
+            </div>
+            <div class="form-group">
+                <label for="end_point">Конечная точка:</label>
+                <input type="text" id="end_point" name="end_point" required>
+            </div>
+            <div id="intermediate-points">
+                <!-- По умолчанию промежуточные точки отсутствуют -->
+            </div>
+            <button type="button" class="add-point-btn" onclick="addIntermediatePoint()">Добавить промежуточную точку</button>
+            <div class="form-group">
+                <label for="days">Выберите количество дней для прогноза:</label>
+                <select id="days" name="days">
+                    <option value="1">1 день</option>
+                    <option value="3">3 дня</option>
+                    <option value="5">5 дней</option>
+                </select>
+            </div>
+            <button type="submit" class="submit-btn">Проверить погоду</button>
+            <!-- Скрытое поле для объединенных точек -->
+            <input type="hidden" id="locations" name="locations">
+        </form>
+    </div>
+
+    <script>
+        let pointCounter = 0; // Счетчик для промежуточных точек
+
+        function addIntermediatePoint() {
+            pointCounter++;
+            const newPoint = document.createElement('div');
+            newPoint.className = 'form-group';
+            newPoint.innerHTML = `
+                <label for="intermediate_point_${pointCounter}">Промежуточная точка:</label>
+                <input type="text" id="intermediate_point_${pointCounter}" name="intermediate_points">
+            `;
+            document.getElementById('intermediate-points').appendChild(newPoint);
+        }
+
+        function combineLocations() {
+            const startPoint = document.getElementById('start_point').value.trim();
+            const endPoint = document.getElementById('end_point').value.trim();
+            const intermediatePoints = document.querySelectorAll('[name="intermediate_points"]');
+
+            // Объединяем все точки в один массив
+            const locations = [startPoint, endPoint];
+            intermediatePoints.forEach(point => {
+                if (point.value.trim()) { // Игнорируем пустые значения
+                    locations.push(point.value.trim());
+                }
+            });
+
+            // Устанавливаем значение скрытого поля
+            document.getElementById('locations').value = locations.join('\n');
+            return true; // Продолжить отправку формы
+        }
+    </script>
+</body>
+</html>
