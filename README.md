@@ -13,7 +13,7 @@
 
 1. Клонируйте репозиторий:
     ```bash
-    git clone https://github.com/yourusername/weather_forecast.git
+    git clone https://github.com/Katachy74/Project3R.git
     cd weather_forecast
     ```
 
