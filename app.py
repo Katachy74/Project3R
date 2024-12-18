@@ -7,12 +7,9 @@ import plotly.io as pio
 
 app = Flask(__name__)
 
-# Функция для создания карты с маршрутом
 def create_map_with_route(coordinates, locations):
-    # Создаем массив координат для линии маршрута
     route_coordinates = [{"lat": coord[0], "lon": coord[1]} for coord in coordinates]
 
-    # Создаем карту с точками и маршрутом
     fig = px.scatter_mapbox(
         lat=[coord[0] for coord in coordinates],
         lon=[coord[1] for coord in coordinates],
@@ -21,7 +18,6 @@ def create_map_with_route(coordinates, locations):
         height=500
     )
 
-    # Добавляем линию маршрута
     fig.add_trace(go.Scattermapbox(
         mode="lines",
         lon=[coord["lon"] for coord in route_coordinates],
@@ -40,7 +36,6 @@ def create_map_with_route(coordinates, locations):
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
-        # Проверяем, существует ли ключ 'locations' в запросе
         if 'locations' not in request.form:
             return render_template('result.html', error="Ошибка: не указаны точки маршрута.")
 
@@ -51,14 +46,11 @@ def index():
         coordinates = []
 
         for location in locations:
-            # Проверяем, что строка не пустая
             if not location.strip():
                 return render_template('result.html', error=f"Ошибка: пустая строка в точках маршрута.")
 
-            # Сохраняем оригинальное название города
             original_location = location
 
-            # Очищаем ввод от лишних пробелов
             location = location.strip()
 
             location_key = get_location_key(location)
@@ -71,7 +63,7 @@ def index():
 
             weather_data['DailyForecasts'] = weather_data['DailyForecasts'][:days]
             weather_data_list.append({
-                'location': original_location,  # Используем оригинальное название
+                'location': original_location,  
                 'data': weather_data
             })
             coord = get_coordinates(location)
